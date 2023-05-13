@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'quiz_brain.dart';
 
 QuizBrain quizBrain = QuizBrain();
@@ -27,8 +28,42 @@ class QuizPage extends StatefulWidget {
 }
 
 class _QuizPageState extends State<QuizPage> {
+  void checkAnswer(bool userPickedAnswer) {
+    bool corectAnswer = quizBrain.getCorrectAnswer();
+    setState(() {
+      if (quizBrain.isFinished() == true) {
+        Alert(
+          context: context,
+          title: 'Finished!',
+          desc: 'You\'ve reached the end of the quiz.',
+        ).show();
+
+        quizBrain.reset();
+
+        scoreKeeper = [];
+      } else {
+        if (corectAnswer == userPickedAnswer) {
+          scoreKeeper.add(
+            Icon(
+              Icons.check,
+              color: Colors.green,
+            ),
+          );
+        } else {
+          scoreKeeper.add(
+            Icon(
+              Icons.close,
+              color: Colors.red,
+            ),
+          );
+        }
+      }
+
+      quizBrain.nextQuestion();
+    });
+  }
+
   List<Icon> scoreKeeper = [];
-  // List<bool> answers = [false, true, true];
 
   @override
   Widget build(BuildContext context) {
@@ -66,17 +101,7 @@ class _QuizPageState extends State<QuizPage> {
               ),
               onPressed: () {
                 //The user picked true.
-                setState(() {
-                  bool corectAnswer = quizBrain.getCorrectAnswer();
-                  if (corectAnswer == true) {
-                    print('user got it right!');
-                  } else {
-                    print('user got it wrong');
-                  }
-                  scoreKeeper.add(
-                    Icon(Icons.check, color: Colors.green),
-                  );
-                });
+                checkAnswer(true);
               },
             ),
           ),
@@ -95,15 +120,7 @@ class _QuizPageState extends State<QuizPage> {
               ),
               onPressed: () {
                 //The user picked false.
-                bool corectAnswer = quizBrain.getCorrectAnswer();
-                if (corectAnswer == false) {
-                  print('user got it right!');
-                } else {
-                  print('user got it wrong');
-                }
-                setState(() {
-                  Icon(Icons.close, color: Colors.red);
-                });
+                checkAnswer(false);
               },
             ),
           ),
